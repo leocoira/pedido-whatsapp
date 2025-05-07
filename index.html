@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de Pedidos</title>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+  <div class="container py-5">
+    <h2 class="mb-4 text-center">📋 Panel de Pedidos</h2>
+    <table class="table table-bordered table-striped" id="tablaPedidos">
+      <thead class="table-dark">
+        <tr>
+          <th>Cliente</th>
+          <th>Dirección</th>
+          <th>Horario</th>
+          <th>Cantidad</th>
+          <th>Producto</th>
+        </tr>
+      </thead>
+      <tbody id="tbodyPedidos">
+        <tr><td colspan="5" class="text-center">Cargando pedidos...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    async function cargarPedidos() {
+      try {
+        const response = await axios.get('http://localhost:5000/api/pedidos');
+        const pedidos = response.data;
+        const tbody = document.getElementById('tbodyPedidos');
+        tbody.innerHTML = '';
+
+        pedidos.forEach(p => {
+          const row = `<tr>
+            <td>${p.cliente}</td>
+            <td>${p.direccion}</td>
+            <td>${p.horario}</td>
+            <td>${p.cantidad}</td>
+            <td>${p.producto}</td>
+          </tr>`;
+          tbody.innerHTML += row;
+        });
+
+        if (pedidos.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" class="text-center">No hay pedidos disponibles</td></tr>';
+        }
+      } catch (err) {
+        console.error(err);
+        document.getElementById('tbodyPedidos').innerHTML = '<tr><td colspan="5" class="text-center text-danger">Error cargando pedidos</td></tr>';
+      }
+    }
+
+    cargarPedidos();
+    setInterval(cargarPedidos, 30000);
+  </script>
+</body>
+</html>
